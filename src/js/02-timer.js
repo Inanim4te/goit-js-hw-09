@@ -29,6 +29,8 @@ const startBtn = document.querySelector('button[data-start]');
 startBtn.setAttribute('disabled', '');
 let timeDifference;
 let convertedTime;
+let currentTime;
+let selectedDate;
 
 // styles
 const timerWrap = document.querySelector('.timer');
@@ -69,8 +71,8 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    const selectedDate = new Date(selectedDates[0]);
-    const currentTime = new Date();
+    selectedDate = new Date(selectedDates[0]);
+    currentTime = new Date();
     if (currentTime < selectedDate) {
       startBtn.removeAttribute('disabled');
       timeDifference = selectedDate - currentTime;
@@ -87,8 +89,14 @@ const dateInput = document.querySelector('#datetime-picker');
 flatpickr(dateInput, options);
 
 startBtn.addEventListener('click', () => {
+  currentTime = new Date();
+  if (currentTime > selectedDate) {
+    return Notify.failure('Please choose a date in the future');
+  }
   startBtn.setAttribute('disabled', '');
   dateInput.setAttribute('disabled', '');
+  timeDifference = selectedDate - currentTime;
+  timer(timeDifference);
   const secondInterval = setInterval(() => {
     timer(timeDifference);
     if (timeDifference <= 0) {
